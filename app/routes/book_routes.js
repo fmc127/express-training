@@ -29,11 +29,12 @@ const router = express.Router()
 
 // INDEX
 // GET /books
-router.get('/books', requireToken, (req, res, next) => {
+
+router.get('/books', requireToken, (request, response, next) => {
   Book.find()
     .then(books => {
       return books.map(book => book.toObject())
     })
-    .then(books => res.status(200).json({ books: books }))
+    .then(books => response.status(200).json({ books }))
     .catch(next)
 })
