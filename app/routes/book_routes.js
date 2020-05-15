@@ -38,3 +38,28 @@ router.get('/books', requireToken, (request, response, next) => {
     .then(books => response.status(200).json({ books }))
     .catch(next)
 })
+
+// SHOW
+// GET
+router.get('/books/:id', requireToken, (req, res, next) => {
+  Book.findById(req.params.id)
+    .then(handle404)
+    .then(book => res.status(200).json({ book: book.toObject() }))
+    .catch(next)
+})
+
+// UPDATE
+// PATCH
+
+router.patch('/books/:id', requireToken, removeBlanks, (req, res, next) => {
+  delete req.body.book.requireOwnership
+
+  Book.findById(req.params.id)
+    .then(handle404)
+    .then(book => {
+      requireOwnership(req, book)
+      return book.updateOne(req.body.book)
+    })
+    .then(() => res.sendStatus(204))
+    .catch(next)
+})
